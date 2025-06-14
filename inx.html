@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World Poetry Generator</title>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            background-color: #f9f3e9;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+        
+        header {
+            background-color: #5a2b8b;
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 3rem;
+            font-weight: normal;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .poem-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            direction: auto;
+        }
+        
+        .poem-title {
+            font-size: 1.5rem;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .poem-content {
+            white-space: pre-line;
+            font-style: italic;
+            min-height: 100px;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+        
+        .arabic {
+            font-family: 'Arial', sans-serif;
+            direction: rtl;
+        }
+        
+        .kurdish {
+            font-family: 'Arial', sans-serif;
+        }
+        
+        .poem-author {
+            text-align: right;
+            font-weight: bold;
+            margin-top: 1rem;
+        }
+        
+        .controls {
+            text-align: center;
+            margin: 2rem 0;
+        }
+        
+        button {
+            background-color: #5a2b8b;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 0.5rem;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background-color: #3d1d5f;
+            transform: translateY(-2px);
+        }
+        
+        select {
+            padding: 0.5rem;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            font-size: 1rem;
+            margin: 0.5rem;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background-color: #5a2b8b;
+            color: white;
+            margin-top: 2rem;
+        }
+        
+        .credits {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #ddd;
+        }
+        
+        .highlight-name {
+            color: #ffd700;
+            font-weight: bold;
+            text-shadow: 0 0 3px rgba(0,0,0,0.3);
+        }
+        
+        .acrostic {
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>World Poetry Generator</h1>
+        <p>Create beautiful poems in multiple languages and styles</p>
+        <div class="credits">
+            Crafted with ❤️ by <span class="highlight-name">Sara</span>, 
+            <span class="highlight-name">[could]</span>, and poets worldwide
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="controls">
+            <select id="language">
+                <option value="english">English</option>
+                <option value="arabic">العربية (Arabic)</option>
+                <option value="kurdish">کوردی (Kurdish Sorani)</option>
+            </select>
+            
+            <select id="poemType">
+                <option value="haiku">Haiku</option>
+                <option value="tanka">Tanka</option>
+                <option value="ghazal">Ghazal</option>
+                <option value="limerick">Limerick</option>
+                <option value="acrostic">Acrostic</option>
+                <option value="freeverse">Free Verse</option>
+            </select>
+            
+            <button id="generateBtn">Generate Poem</button>
+            <button id="saveBtn">Save Poem</button>
+        </div>
+        
+        <div class="poem-card" id="poemContainer">
+            <div class="poem-title" id="poemTitle">Select options and click generate</div>
+            <div class="poem-content" id="poemContent"></div>
+            <div class="poem-author">
+                - <span id="poemAuthor">The Poet</span>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        &copy; 2023 World Poetry Generator<br>
+        <div class="credits">
+            Special thanks to <span class="highlight-name">Sara</span> and 
+            <span class="highlight-name">[could]</span> for their creative vision
+        </div>
+    </footer>
+    
+    <script>
+        // Enhanced Multilingual Poetry Generator
+        class PoetryGenerator {
+            constructor() {
+                // Word banks for three languages
+                this.english = {
+                    nouns: ["moon", "heart", "ocean", "dream", "shadow", 
+                           "whisper", "river", "silence", "sunset", "memory",
+                           "leaf", "star", "wind", "tear", "song", "rose"],
+                    verbs: ["dances", "weeps", "shines", "fades", "echoes",
+                           "sings", "breaks", "floats", "burns", "sleeps",
+                           "flies", "whispers", "cries", "laughs", "falls"],
+                    adjectives: ["golden", "fragile", "endless", "hollow", "ancient",
+                               "quiet", "lonely", "wandering", "bitter", "sweet",
+                               "crimson", "frozen", "timeless", "hidden", "radiant"],
+                    adverbs: ["softly", "slowly", "forever", "never", "suddenly",
+                             "silently", "wildly", "carefully", "brightly", "coldly"],
+                    prepositions: ["beneath", "above", "within", "between", "through",
+                                  "against", "beyond", "before", "after", "without"],
+                    emotions: ["love", "joy", "sorrow", "anger", "hope"],
+                    places: ["Nantucket", "Spain", "the sea", "the hills", "Baghdad",
+                            "the mountains", "a distant land", "the desert", "the forest"]
+                };
+
+                this.arabic = {
+                    nouns: ["قمر", "قلب", "بحر", "حلم", "ظل", 
+                           "همسة", "نهر", "صمت", "غروب", "ذكرى",
+                           "ورقة", "نجمة", "ريح", "دمعة", "أغنية"],
+                    verbs: ["يرقص", "يبكي", "يشرق", "يذبل", "يتردد",
+                           "يغني", "ينكسر", "يطفو", "يحترق", "ينام",
+                           "يطير", "يهمس", "يبكي", "يضحك", "يسقط"],
+                    adjectives: ["ذهبي", "هش", "لا نهائي", "مجوف", "قديم",
+                               "هادئ", "وحيد", "متجول", "مر", "حلو",
+                               "قرمزي", "متجمد", "أبدي", "مخفي", "مشرق"],
+                    adverbs: ["بهدوء", "ببطء", "للأبد", "أبداً", "فجأة",
+                             "بصمت", "بشراسة", "بحذر", "بإشراق", "ببرودة"],
+                    prepositions: ["تحت", "فوق", "داخل", "بين", "خلال",
+                                  "ضد", "ما بعد", "قبل", "بعد", "بدون"],
+                    emotions: ["حب", "فرح", "حزن", "غضب", "أمل"],
+                    places: ["بغداد", "الأندلس", "البحر", "الجبل", "الصحراء"]
+                };
+
+                this.kurdish = {
+                    nouns: ["مانگ", "دڵ", "دەریا", "خەون", "سێبەر", 
+                           "پچەپچ", "چەم", "بێدەنگی", "ئاوابوون", "یاد",
+                           "پەڵه", "ئەستێره", "با", "هارمێ", "گۆرانی"],
+                    verbs: ["سەما دەکات", "گریان دەکات", "درەوش دەکات", "وەک دەکات", "دەنگ دەگەڕێنێت",
+                           "گۆرانی دەڵێت", "دەشکێت", "سەر ئاو دەکەوێت", "دەسوتێت", "دەخوات",
+                           "فڕین دەکات", "پچەپچ دەکات", "گریان دەکات", "پێکەنین دەکات", "دەکەوێت"],
+                    adjectives: ["زێڕین", "ناسک", "بێکۆتایی", "بەتاڵ", "کۆن",
+                               "بێدەنگ", "تەنیا", "گەڕۆک", "تێک", "خۆش",
+                               "سور", "سەهۆڵ", "هەتاهەتایی", "شاراوە", "درەوشاوە"],
+                    adverbs: ["بە نەرمی", "بە هێواشی", "بۆ هەتاهەتایی", "هەرگیز", "لەناکاو",
+                             "بە بێدەنگی", "بە توڕەیی", "بە وریایی", "بە درەوشایی", "بە ساردی"],
+                    prepositions: ["ژێر", "سەر", "لەناو", "لەنێوان", "لە ڕێگای",
+                                  "بەرامبەر", "لەسەروو", "پێش", "دوای", "بەبێ"],
+                    emotions: ["خۆشەویستی", "خۆشی", "خەفەت", "توڕەیی", "هیوا"],
+                    places: ["هەولێر", "بەغدا", "دەریا", "چیا", "بیابان"]
+                };
+
+                this.savedPoems = [];
+            }
+
+            /* ========== POEM GENERATORS ========== */
+            
+            generateHaiku(lang) {
+                const words = this[lang];
+                if (!words) return this.errorMessage(lang);
+
+                if (lang === 'arabic') {
+                    const lines = [
+                        `${this.getRandom(words.adjectives)} ${this.getRandom(words.nouns)}`,
+                        `${this.getRandom(words.verbs)} ${this.getRandom(words.adverbs)} ${this.getRandom(words.prepositions)} ${this.getRandom(words.nouns)}`,
+                        `${this.getRandom(words.nouns)} ${this.getRandom(words.verbs)}`
+                    ];
+                    return {
+                        title: "هايكو",
+                        content: lines.join('\n'),
+                        author: "شاعر"
+                    };
+                }
+                else if (lang === 'kurdish') {
+                    const lines = [
+                        `${this.getRandom(words.adjectives)} ${this.getRandom(words.nouns)}`,
+                        `${this.getRandom(words.verbs)} ${this.getRandom(words.adverbs)} ${this.getRandom(words.prepositions)} ${this.getRandom(words.nouns)}`,
+                        `${this.getRandom(words.nouns)} ${this.getRandom(words.verbs)}`
+                    ];
+                    return {
+                        title: "هایکو",
+                        content: lines.join('\n'),
+                        author: "شاعیر"
+                    };
+                }
+                else {
+                    const lines = [
+                        `${this.getRandom(words.adjectives)} ${this.getRandom(words.nouns)}`,
+                        `${this.getRandom(words.verbs)} ${this.getRandom(words.adverbs)} ${this.getRandom(words.prepositions)} the ${this.getRandom(words.nouns)}`,
+                        `${this.getRandom(words.nouns)} ${this.getRandom(words.verbs)}`
+                    ];
+                    return {
+                        title: "Haiku",
+                        content: lines.map(line => this.capitalize(line)).join('\n'),
+                        author: "The Poet"
+                    };
+                }
+            }
+
+            generateTanka(lang) {
+                const words = this[lang];
+                if (!words) return this.errorMessage(lang);
+
+                if (lang === 'arabic') {
+                    const lines = [
+                        `${this.getRandom(words.adjectives)} ${this.getRandom(words.nouns)}`,
+                        `${this.getRandom(words.verbs)} ${this.getRandom(words.adverbs)}`,
+                        `${this.getRandom(words.prepositions)} ${this.getRandom(words.nouns)}`,
+                        `${this.getRandom(words.emotions)} ${this.getRandom(words.verbs)}`,
+                        `${this.getRandom(words.nouns)} ${this.getRandom(words.adjectives)}`
+                    ];
+                    return {
+                        title: "تانكا",
+                        content: lines.join('\n'),
+                        author: "شاعر"
+                    };
+                }
+                else if (lang === 'kurdish') {
+                    const lines = [
+                        `${this.getRandom(words.adjectives)} ${this.getRandom(words.nouns)}`,
+                        `${this.getRandom(words.verbs)} ${this.getRandom(words.adverbs)}`,
+                        `${this.getRandom(words.prepositions)} ${this.getRandom(words.nouns)}`,
+                        `${this.getRandom(words.emotions)} ${this.getRandom(words.verbs)}`,
+                        `${this.getRandom(words.nouns)} ${this.getRandom(words.adjectives)}`
+                    ];
+                    return {
+                        title: "تانکا",
+                        content: lines.join('\n'),
+                        author: "شاعیر"
+                    };
+                }
+                else {
+                    const lines = [
+                        `${this.capitalize(this.getRandom(words.adjectives))} ${this.getRandom(words.nouns)}`,
+                        `${this.getRandom(words.verbs)} ${this.getRandom(words.adverbs)}`,
+                        `${this.capitalize(this.getRandom(words.prepositions))} the ${this.getRandom(words.nouns)}`,
+                        `${this.capitalize(this.getRandom(words.emotions))} ${this.getRandom(words.verbs)}`,
+                        `${this.capitalize(this.getRandom(words.nouns))} ${this.getRandom(words.adjectives)}`
+                    ];
+                    return {
+                        title: "Tanka",
+                        content: lines.join('\n'),
+                        author: "The Poet"
+                    };
+                }
+            }
+
+            generateGhazal(lang) {
+                const words = this[lang];
+                if (!words) return this.errorMessage(lang);
+
+                const refrain = this.getRandom(words.nouns);
+                let content = "";
+                const verses = 3 + Math.floor(Math.random() * 3);
+
+                if (lang === 'arabic') {
+                    for (let i = 0; i < verses; i++) {
+                        content += `${this.getRandom(words.adjectives)} ${refrain}، ${this.getRandom(words.verbs)} ${this.getRandom(words.adverbs)}\n`;
+                        content += `${this.getRandom(words.emotions)} ${this.getRandom(words.verbs)} ${this.getRandom(words.prepositions)} ${refrain}\n\n`;
+                    }
+                    content += `يا ${refrain}! ${this.getRandom(words.emotions)} ${this.getRandom(words.verbs)} ${this.getRandom(words.adverbs)}`;
+
+                    return {
+                        title: "غزل",
+                        content: content.trim(),
+                        author: "شاعر"
+                    };
+                }
+                else if (lang === 'kurdish') {
+                    for (let i = 0; i < verses; i++) {
+                        content += `${this.getRandom(words.adjectives)} ${refrain}، ${this.getRandom(words.verbs)} ${this.getRandom(words.adverbs)}\n`;
+                        content += `${this.getRandom(words.emotions)} ${this.getRandom(words.verbs)} ${this.getRandom(words.prepositions)} ${refrain}\n\n`;
+                    }
+                    content += `ئەی ${refrain}! ${this.getRandom(words.emotions)} ${this.getRandom(words.verbs)} ${this.getRandom(words.adverbs)}`;
+
+                    return {
+                        title: "غەزەل",
+                        content: content.trim(),
+                        author: "شاعیر"
+                    };
+                }
+                else {
+                    for (let i = 0; i < verses; i++) {
+                        content += `${this.capitalize(this.getRandom(words.adjectives))} ${refrain}, ${this.getRandom(words.verbs)} ${this.getRandom(words.adverbs)}\n`;
+                        content += `${this.capitalize(this.getRandom(words.emotions))} ${this.getRandom(words.verbs)} ${this.getRandom(words.prepositions)} ${refrain}\n\n`;
+                    }
+                    content += `O ${refrain}! ${this.getRandom(words.emotions)} ${this.getRandom(words.verbs)} ${this.getRandom(words.adverbs)}`;
+
+                    return {
+                        title: "Ghazal",
+                        content: content.trim(),
+                        author: "The Poet"
+                    };
+                }
+            }
+
+            generateLimerick(lang) {
+                const words = this[lang];
+                if (!words) return this.errorMessage(lang);
+
+                if (lang === 'arabic') {
+                    const lines = [
+                        `كان هناك ${this.getRandom(words.nouns)} من ${this.getRandom(words.places)}`,
+                        `الذي كان ${this.getRandom(words.nouns)} ${this.getRandom(words.adjectives)} بقدر ما يكون`,
+                        `هم ${this.getRandom(words.verbs)} مع ${this.getRandom(words.nouns)}`,
+                        `و ${this.getRandom(words.verbs)} ${this.getRandom(words.adverbs)}`,
+                        `الآن هم ${this.getRandom(["سعداء", "حزين", "حر", "ضائع"])} بقدر ما يمكن أن يكون`
+                    ];
+                    return {
+                        title: "ليمريك",
+                        content: lines.join('\n'),
+                        author: "شاعر"
+                    };
+                }
+                else if (lang === 'kurdish') {
+                    const lines = [
+                        `جاروێژکێک هەبوو ${this.getRandom(words.nouns)} لە ${this.getRandom(words.places)}`,
+                        `کە ${this.getRandom(words.nouns)} ${this.getRandom(words.adjectives)} بوو وەک دەکرێت بێت`,
+                        `ئەوان ${this.getRandom(words.verbs)} لەگەڵ ${this.getRandom(words.nouns)}`,
+                        `و ${this.getRandom(words.verbs)} ${this.getRandom(words.adverbs)}`,
+                        `ئێستا ئەوان ${this.getRandom(["دڵخۆش", "دڵتەنگ", "ئازاد", "ون"])} وەک دەکرێت بێت`
+                    ];
+                    return {
+                        title: "لیمێریک",
+                        content: lines.join('\n'),
+                        author: "شاعیر"
+                    };
+                }
+                else {
+                    const lines = [
+                        `There once was a ${this.getRandom(words.nouns)} from ${this.getRandom(words.places)}`,
+                        `Whose ${this.getRandom(words.nouns)} was ${this.getRandom(words.adjectives)} as could be`,
+                        `They ${this.getRandom(words.verbs)} with a ${this.getRandom(words.nouns)}`,
+                        `And ${this.getRandom(words.verbs)} ${this.getRandom(words.adverbs)}`,
+                        `Now they're ${this.getRandom(["happy", "sad", "free", "lost"])} as can be`
+                    ];
+                    return {
+                        title: "Limerick",
+                        content: lines.join('\n'),
+                        author: "The Poet"
+                    };
+                }
+            }
+
+            generateAcrostic(lang) {
+                const words = this[lang];
+                if (!words) return this.errorMessage(lang);
+
+                let name = "";
+                let content = "";
+                
+                if (lang === 'arabic') {
+                    name = "شعر";
+                    const letters = name.split('');
+                    for (const letter of letters) {
+                        content += `${letter} - ${this.getRandom(words.adjectives)} ${this.getRandom(words.nouns)}\n`;
+                    }
+                    return {
+                        title: "أكروستيك",
+                        content: content.trim(),
+                        author: "شاعر"
+                    };
+                }
+                else if (lang === 'kurdish') {
+                    name = "هۆنراوه";
+                    const letters = name.split('');
+                    for (const letter of letters) {
+                        content += `${letter} - ${this.getRandom(words.adjectives)} ${this.getRandom(words.nouns)}\n`;
+                    }
+                    return {
+                        title: "ئاکرۆستیک",
+                        content: content.trim(),
+                        author: "شاعیر"
+                    };
+                }
+                else {
+                    name = "POETRY";
+                    for (let i = 0; i < name.length; i++) {
+                        content += `<span class="acrostic">${name[i]}</span> - ${this.capitalize(this.getRandom(words.adjectives))} ${this.getRandom(words.nouns)}\n`;
+                    }
+                    return {
+                        title: "Acrostic",
+                        content: content.trim(),
+                        author: "The Poet"
+                    };
+                }
+            }
+
+            generateFreeVerse(lang) {
+                const words = this[lang];
+                if (!words) return this.errorMessage(lang);
+
+                const lineCount = 5 + Math.floor(Math.random() * 6);
+                let content = "";
+                
+                for (let i = 0; i < lineCount; i++) {
+                    const structure = Math.random();
+                    let line = "";
+                    
+                    if (structure < 0.3) {
+                        if (lang === 'arabic') {
+                            line = `ال${this.getRandom(words.nouns)} ${this.getRandom(words.verbs)} ${this.getRandom(words.adverbs)}`;
+                        } else if (lang === 'kurdish') {
+                            line = `${this.getRandom(words.nouns)} ${this.getRandom(words.verbs)} ${this.getRandom(words.adverbs)}`;
+                        } else {
+                            line = `The ${this.getRandom(words.nouns)} ${this.getRandom(words.verbs)} ${this.getRandom(words.adverbs)}`;
+                        }
+                    } else if (structure < 0.6) {
+                        if (lang === 'arabic') {
+                            line = `${this.getRandom(words.adjectives)} ${this.getRandom(words.nouns)}`;
+                        } else {
+                            line = `${this.capitalize(this.getRandom(words.adjectives))} ${this.getRandom(words.nouns)}`;
+                        }
+                    } else if (structure < 0.8) {
+                        if (lang === 'arabic') {
+                            line = `${this.getRandom(words.prepositions)} ${this.getRandom(words.nouns)}`;
+                        } else if (lang === 'kurdish') {
+                            line = `${this.getRandom(words.prepositions)} ${this.getRandom(words.nouns)}`;
+                        } else {
+                            line = `${this.capitalize(this.getRandom(words.prepositions))} the ${this.getRandom(words.nouns)}`;
+                        }
+                    } else {
+                        line = this.capitalize(this.getRandom(words.emotions));
+                    }
+                    
+                    content += line + '\n';
+                    
+                    if (Math.random() < 0.2 && i < lineCount - 1) {
+                        content += '\n';
+                    }
+                }
+                
+                if (lang === 'arabic') {
+                    return {
+                        title: "شعر حر",
+                        content: content.trim(),
+                        author: "شاعر"
+                    };
+                } else if (lang === 'kurdish') {
+                    return {
+                        title: "هۆنراوەی ئازاد",
+                        content: content.trim(),
+                        author: "شاعیر"
+                    };
+                } else {
+                    return {
+                        title: "Free Verse",
+                        content: content.trim(),
+                        author: "The Poet"
+                    };
+                }
+            }
+
+            /* ========== HELPER METHODS ========== */
+            
+            getRandom(array) {
+                return array[Math.floor(Math.random() * array.length)];
+            }
+
+            capitalize(str) {
+                return str.charAt(0).toUpperCase() + str.slice(1);
+            }
+
+            errorMessage(lang) {
+                return {
+                    title: "Error",
+                    content: `Language ${lang} not supported`,
+                    author: "System"
+                };
+            }
+
+            savePoem(poem) {
+                this.savedPoems.push(poem);
+                localStorage.setItem('savedPoems', JSON.stringify(this.savedPoems));
+            }
+
+            getSavedPoems() {
+                const saved = localStorage.getItem('savedPoems');
+                return saved ? JSON.parse(saved) : [];
+            }
+        }
+
+        // ========== MAIN APPLICATION ==========
+        document.addEventListener('DOMContentLoaded', () => {
+            const generateBtn = document.getElementById('generateBtn');
+            const saveBtn = document.getElementById('saveBtn');
+            const languageSelect = document.getElementById('language');
+            const poemTypeSelect = document.getElementById('poemType');
+            const poemContainer = document.getElementById('poemContainer');
+            const poemTitle = document.getElementById('poemTitle');
+            const poemContent = document.getElementById('poemContent');
+            const poemAuthor = document.getElementById('poemAuthor');
+
+            const poetryGen = new PoetryGenerator();
+            let currentPoem = null;
+
+            // Generate poem when button clicked
+            generateBtn.addEventListener('click', () => {
+                const language = languageSelect.value;
+                const poemType = poemTypeSelect.value;
+                
+                switch(poemType) {
+                    case 'haiku':
+                        currentPoem = poetryGen.generateHaiku(language);
+                        break;
+                    case 'tanka':
+                        currentPoem = poetryGen.generateTanka(language);
+                        break;
+                    case 'ghazal':
+                        currentPoem = poetryGen.generateGhazal(language);
+                        break;
+                    case 'limerick':
+                        currentPoem = poetryGen.generateLimerick(language);
+                        break;
+                    case 'acrostic':
+                        currentPoem = poetryGen.generateAcrostic(language);
+                        break;
+                    case 'freeverse':
+                        currentPoem = poetryGen.generateFreeVerse(language);
+                        break;
+                    default:
+                        currentPoem = poetryGen.generateFreeVerse(language);
+                }
+                
+                // Update UI
+                poemTitle.textContent = currentPoem.title;
+                poemContent.innerHTML = currentPoem.content; // Use innerHTML for acrostic styling
+                poemAuthor.textContent = currentPoem.author;
+                
+                // Set language-specific styling
+                poemContainer.className = 'poem-card';
+                if (language === 'arabic') {
+                    poemContainer.classList.add('arabic');
+                } else if (language === 'kurdish') {
+                    poemContainer.classList.add('kurdish');
+                }
+            });
+
+            // Save poem when button clicked
+            saveBtn.addEventListener('click', () => {
+                if (currentPoem) {
+                    poetryGen.savePoem(currentPoem);
+                    alert('Poem saved!');
+                } else {
+                    alert('Generate a poem first!');
+                }
+            });
+
+            // Generate initial poem
+            generateBtn.click();
+        });
+    </script>
+</body>
+</html>
